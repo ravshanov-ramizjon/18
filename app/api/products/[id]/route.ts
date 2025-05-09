@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 
 // DELETE /api/products/[id]
 export async function DELETE(
-  req: Request,
-  context: { params: Record<string, string> }
+  request: Request,
+  context: { params: any }
 ) {
   const id = parseInt(context.params.id);
 
@@ -21,11 +21,11 @@ export async function DELETE(
 
 // PUT /api/products/[id]
 export async function PUT(
-  req: Request,
-  context: { params: Record<string, string> }
+  request: Request,
+  { params }: { params: any }
 ) {
-  const id = parseInt(context.params.id);
-  const data = await req.json();
+  const id = parseInt(params.id);
+  const data = await request.json();
 
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
