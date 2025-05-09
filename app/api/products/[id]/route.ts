@@ -1,28 +1,28 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-// Встроенный тип для контекста
-interface RouteContext {
-  params: { id: string };
-}
-
+// DELETE /api/products/[id]
 export async function DELETE(
   req: Request,
-  context: RouteContext
+  context: { params: Record<string, string> }
 ) {
   const id = parseInt(context.params.id);
+
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
   }
 
-  await prisma.product.delete({ where: { id } });
+  await prisma.product.delete({
+    where: { id },
+  });
 
   return NextResponse.json({ success: true });
 }
 
+// PUT /api/products/[id]
 export async function PUT(
   req: Request,
-  context: RouteContext
+  context: { params: Record<string, string> }
 ) {
   const id = parseInt(context.params.id);
   const data = await req.json();
@@ -33,7 +33,12 @@ export async function PUT(
 
   const updatedProduct = await prisma.product.update({
     where: { id },
-    data,
+    data: {
+      name: data.name,
+      price: data.price,
+      description: data.description,
+      images: data.images,
+    },
   });
 
   return NextResponse.json(updatedProduct);
