@@ -1,10 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 
 // DELETE /api/products/[id]
 export async function DELETE(
-  req: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   const id = parseInt(params.id);
@@ -22,11 +21,11 @@ export async function DELETE(
 
 // PUT /api/products/[id]
 export async function PUT(
-  req: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   const id = parseInt(params.id);
-  const data = await req.json();
+  const data = await request.json();
 
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
