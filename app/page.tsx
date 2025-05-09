@@ -1,9 +1,10 @@
-import { prisma } from '@/lib/prisma'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from '@/components/ui/card'
-import Image from 'next/image'
+// app/page.tsx
+import { getProducts } from "@/lib/products"
+import Image from "next/image"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from "@/components/ui/card"
 
 export default async function Home() {
-  const products = await prisma.product.findMany()
+  const products = await getProducts()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 p-8">

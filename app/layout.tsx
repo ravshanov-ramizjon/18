@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/castom/Header";
 
+
 export const metadata: Metadata = {
   title: "FruitStore",
   description: "FruitStore - Your one-stop shop for fresh fruits",
@@ -14,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Header />
         <main>
-            {children}
+          {children}
         </main>
       </body>
     </html>

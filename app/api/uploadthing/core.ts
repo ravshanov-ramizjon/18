@@ -1,18 +1,21 @@
-// app/api/uploadthing/core.ts
-import { createRouter } from '@uploadthing/server';
-import { z } from 'zod';
-import { uploadToSomeStorage } from '@/lib/uploadToStorage';  // Импортируем функцию для загрузки
+import { createUploadthing, type FileRouter } from "uploadthing/server";
 
-export const OurFileRouter = createRouter()
-  .mutation('imageUploader', {
-    input: z.object({
-      file: z.any(),  
-    }),
-    resolve: async ({ input }: { input: { file: any } }) => {
-      const file = input.file;
+// Определим наш файл роутер для загрузки изображений
+const f = createUploadthing();
 
-      const uploadResult = await uploadToSomeStorage(file);
-
-      return uploadResult;  
+export const ourFileRouter = {
+  // Указываем тип для загрузки изображений
+  productImage: f({
+    image: {
+      maxFileSize: "4MB",
+      additionalProperties: {
+        allowedFileTypes: ["image/jpeg", "image/png", "image/webp", "image/svg"], // Поддерживаемые типы изображений
+      },
     },
-  });
+  }).onUploadComplete(async ({ file }) => {
+    console.log("Загружен файл:", file.url);
+    // Тут можно отправить url на сервер для сохранения в БД
+  }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof ourFileRouter;

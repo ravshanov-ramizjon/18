@@ -66,7 +66,7 @@ export default function SignIn() {
         </button>
 
         <div className="text-center text-sm text-gray-600 mt-4">
-          <p>Нет аккаунта? <a href="/signup" className="text-blue-600 hover:text-blue-700">Создать аккаунт</a></p>
+          <p>Нет аккаунта? <a href="/admin" className="text-blue-600 hover:text-blue-700">Создать аккаунт</a></p>
         </div>
       </form>
     </div>

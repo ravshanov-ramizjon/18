@@ -1,113 +1,163 @@
 "use client";
 
 import { useState } from "react";
+import { UploadButton } from "@/lib/uploadthing";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function AddProductDialog({
-  onProductAdded,
+  onProductCreated,
 }: {
-  onProductAdded: (product: any) => void;
+  onProductCreated: (product: any) => void;
 }) {
-  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleAddProduct = () => {
-    if (!name || !price || !image) return;
+  const handleAddProduct = async () => {
+    if (!name || !description || !price || !imageUrl) {
+      alert("Заполните все поля");
+      return;
+    }
 
-    const newProduct = {
-      name,
-      price: parseFloat(price),
-      imageUrl: previewUrl,
-    };
+    setLoading(true);
 
-    onProductAdded(newProduct);
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          description,
+          price: parseFloat(price),
+          images: [imageUrl],
+        }),
+      });
 
-    setName("");
-    setPrice("");
-    setImage(null);
-    setPreviewUrl(null);
-    setOpen(false);
+      if (!res.ok) throw new Error("Ошибка при создании продукта");
+
+      const product = await res.json();
+      onProductCreated(product);
+
+      setName("");
+      setDescription("");
+      setPrice("");
+      setImageUrl(null);
+
+      window.location.reload();
+    } catch (err) {
+      alert("Не удалось сохранить продукт");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length <= 500) {
+      setDescription(e.target.value);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-primary hover:bg-primary/90 transition-colors">
-          ➕ Добавить продукт
-        </Button>
+        <Button variant="outline">Добавить продукт</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md rounded-2xl shadow-xl border bg-background">
+
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-foreground">
-            Новый продукт
-          </DialogTitle>
+          <DialogTitle>Добавить продукт</DialogTitle>
         </DialogHeader>
-        <div className="space-y-5">
+
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-sm text-muted-foreground">Название</Label>
+            <Label>Название</Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Например: Банан"
-              className="focus-visible:ring-primary"
+              placeholder="Введите название продукта"
             />
           </div>
+
           <div className="space-y-2">
-            <Label className="text-sm text-muted-foreground">Цена</Label>
+            <Label>Описание</Label>
+            <Textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              placeholder="Введите описание продукта"
+              maxLength={500}
+              rows={4}
+              className="resize-none"
+            />
+            <div className="text-sm text-right">
+              <span
+                className={description.length >= 480 ? "text-red-500" : "text-muted-foreground"}
+              >
+                {description.length}/500
+              </span>
+            </div>
+            {description.length === 500 && (
+              <div className="text-red-500 text-sm mt-1">Лимит символов достигнут!</div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Цена</Label>
             <Input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="Например: 199"
-              className="focus-visible:ring-primary"
+              placeholder="Введите цену"
             />
           </div>
+
           <div className="space-y-2">
-            <Label className="text-sm text-muted-foreground">Изображение</Label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="cursor-pointer file:text-sm file:font-medium"
+            <Label>Изображение</Label>
+            <UploadButton
+              className="w-full bg-gray-500"
+              endpoint="productImage"
+              onClientUploadComplete={(res) => {
+                if (res && res.length > 0) {
+                  setImageUrl(res[0].url);
+                }
+              }}
+              onUploadError={(error) => {
+                console.error("Ошибка загрузки:", error);
+                alert("Ошибка при загрузке изображения");
+              }}
             />
-            {previewUrl && (
+            {imageUrl && (
               <img
-                src={previewUrl}
+                src={imageUrl}
                 alt="Превью"
-                className="mt-3 h-40 w-full object-cover rounded-lg border"
+                className="w-full rounded-md shadow mt-2"
               />
             )}
           </div>
-          <div className="flex justify-end pt-4">
-            <Button
-              onClick={handleAddProduct}
-              className="bg-green-600 hover:bg-green-700 transition-colors"
-            >
-              💾 Сохранить
-            </Button>
-          </div>
         </div>
+
+        <DialogFooter>
+          <Button
+            onClick={handleAddProduct}
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? "Загрузка..." : "Сохранить"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

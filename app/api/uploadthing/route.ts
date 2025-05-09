@@ -1,7 +1,9 @@
 // app/api/uploadthing/route.ts
-import { createRouteHandler } from "uploadthing/next";
-import { OurFileRouter } from "@/app/api/uploadthing/core";
 
+import { createRouteHandler } from "uploadthing/next";
+import { ourFileRouter } from "./core";
+
+// Uploadthing endpoint
 export const { GET, POST } = createRouteHandler({
-  router: OurFileRouter,
+  router: ourFileRouter,
 });

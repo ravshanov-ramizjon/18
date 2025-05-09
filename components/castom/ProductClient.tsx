@@ -9,7 +9,7 @@ export default function ProductClient({ initialProducts }: { initialProducts: an
 
   return (
     <div>
-      <AddProductDialog onProductAdded={(product) => setProducts([...products, product])} />
+      <AddProductDialog onProductCreated={(product) => setProducts([...products, product])} />
     </div>
   );
 }
