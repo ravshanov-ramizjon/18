@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 // DELETE /api/products/[id]
 export async function DELETE(
   request: Request,
-  context: { params: any }
+  context: { params: { id: string } }
 ) {
   const id = parseInt(context.params.id);
 
@@ -22,7 +22,7 @@ export async function DELETE(
 // PUT /api/products/[id]
 export async function PUT(
   request: Request,
-  { params }: { params: any }
+  { params }: { params: { id: string } }
 ) {
   const id = parseInt(params.id);
   const data = await request.json();
