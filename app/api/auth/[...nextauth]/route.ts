@@ -11,7 +11,7 @@ const credentialsSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export const authOptions: NextAuthOptions = {
+ const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -37,14 +37,13 @@ export const authOptions: NextAuthOptions = {
           const isValid = await bcrypt.compare(password, existingUser.password);
           if (isValid) {
             return {
-              id: existingUser.id.toString(), // Преобразуем id в строку
+              id: existingUser.id.toString(), 
               email: existingUser.email,
               name: existingUser.name,
             };
           }
         }
 
-        // Создание нового пользователя, если не найден или неправильный пароль
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await prisma.user.create({
