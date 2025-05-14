@@ -12,13 +12,9 @@ const nextConfig: NextConfig = {
     ],
   },
   webpack(config) {
-    // Добавление правила для игнорирования файлов, содержащих WindowsApps
-    config.module.rules.push({
-      test: /WindowsApps/,
-      use: 'ignore-loader',
-      exclude: /C:\\Users\\User\\AppData\\Local\\Microsoft\\WindowsApps\\GameBarElevatedFT_Alias.exe/,
-    });
-    
+    config.watchOptions = {
+      ignored: ['**/node_modules', '**/C:/Users/User/Application Data/**'],
+    };
     return config;
   },
 };

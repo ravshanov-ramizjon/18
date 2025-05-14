@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FaTrash, FaEdit } from "react-icons/fa";
 import { UploadButton } from "@/lib/uploadthing";
 import { Label } from "../ui/label";
 import ProductCard from "./ProductCard"; // отдельный компонент карточки
