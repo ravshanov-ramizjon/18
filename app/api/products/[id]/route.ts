@@ -4,13 +4,14 @@ import { NextRequest } from "next/server";
 
 type Params = { params: { id: string } };
 
-export async function DELETE(req: NextRequest, { params }: Params) {
-  const id = parseInt(params.id);
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const IDInt = parseInt(id);
 
-  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  if (isNaN(IDInt)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
   await prisma.product.delete({
-    where: { id },
+    where: { id: IDInt },
   });
 
   return NextResponse.json({ success: true });
