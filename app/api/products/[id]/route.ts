@@ -17,14 +17,15 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   return NextResponse.json({ success: true });
 }
 
-export async function PUT(req: Request, { params }: Params) {
-  const id = parseInt(params.id);
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const IDInt = parseInt(id);
   const data = await req.json();
 
-  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  if (isNaN(IDInt)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
   const updatedProduct = await prisma.product.update({
-    where: { id },
+    where: { id: IDInt },
     data: {
       name: data.name,
       price: data.price,
