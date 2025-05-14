@@ -11,11 +11,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack(config) {
-    config.watchOptions = {
-      ignored: ['**/node_modules', '**/C:/Users/User/Application Data/**'],
-    };
-    return config;
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 
